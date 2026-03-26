@@ -2,16 +2,19 @@ import streamlit as st
 import numpy as np
 
 # Configuración
-st.set_page_config(page_title="Nexus AI Corregida", page_icon="🧠")
+st.set_page_config(page_title="Nexus AI: Sargento Estricto", page_icon="👮‍♂️")
 
-def sigmoid(x): return 1 / (1 + np.exp(-x))
+def sigmoid(x): 
+    return 1 / (1 + np.exp(-x))
 
-# Pesos ajustados para que las decisiones sean lógicas
-W0 = np.array([[-2.5, -1.5, 1.2, 2.0], [-2.4, -1.6, 1.3, 1.9]])
-W1 = np.array([[-3.5], [-1.8], [1.7], [3.2]])
+# --- PESOS AJUSTADOS (MODO ESTRICTO) ---
+# Hemos subido los valores a -8 y -10 para que la IA sea mucho más radical.
+# Ahora, un examen cerca (v2 bajo) restará muchísima más puntuación.
+W0 = np.array([[-6.5, -4.5, 3.2, 5.0], [-7.4, -5.6, 4.3, 6.9]])
+W1 = np.array([[-12.5], [-5.8], [4.7], [10.2]])
 
-st.title("🧠 Nexus AI: El Oráculo Lógico")
-st.write("Ahora Nexus entiende que los exámenes son presión negativa.")
+st.title("👮‍♂️ Nexus AI: Modo Sargento")
+st.write("En este modo, Nexus no perdona. Si hay exámenes, la probabilidad cae en picado.")
 
 # Selector de modo
 modo = st.selectbox(
@@ -21,18 +24,15 @@ modo = st.selectbox(
 
 st.divider()
 
-# --- AQUÍ ESTÁ EL TRUCO ---
+# Lógica de inversión de datos
 if modo == "Instituto":
     v1 = st.slider("😇 Deberes hechos (1 = Todo listo)", 0.0, 1.0, 0.5)
-    # Invertimos: si pones 1 en exámenes, la IA recibe un 0 (presión máxima)
     val_examenes = st.slider("📚 Proximidad de Exámenes (1 = Mañana mismo)", 0.0, 1.0, 0.5)
     v2 = 1.0 - val_examenes 
-
 elif modo == "Banco":
     v1 = st.slider("💰 Ahorros (1 = Muchos)", 0.0, 1.0, 0.5)
     val_deudas = st.slider("💸 Deudas pendientes (1 = Muchas deudas)", 0.0, 1.0, 0.5)
     v2 = 1.0 - val_deudas
-
 else:
     v1 = st.slider("🔋 Energía (1 = A tope)", 0.0, 1.0, 0.5)
     val_daño = st.slider("🧟 Distancia del Zombie (1 = Encima de ti)", 0.0, 1.0, 0.5)
@@ -46,17 +46,17 @@ if st.button("🔥 CONSULTAR A NEXUS", use_container_width=True):
     
     st.divider()
     
-    # Mensajes lógicos
-    if prob >= 80:
+    # Mensajes según el nuevo rigor de la IA
+    if prob >= 85:
         st.balloons()
-        st.success(f"### {prob:.1f}% - ¡ADELANTE!")
-        st.write("**Nexus dice:** 'Todo bajo control. Disfruta.'")
-    elif prob >= 45:
-        st.warning(f"### {prob:.1f}% - CUIDADO")
-        st.write("**Nexus dice:** 'Estás en el límite. Haz algo productivo primero.'")
+        st.success(f"### {prob:.1f}% - PERMISO CONCEDIDO")
+        st.write("**Sargento Nexus:** 'Impecable. Has cumplido. Retírese a descansar.'")
+    elif prob >= 40:
+        st.warning(f"### {prob:.1f}% - REVISIÓN NEGATIVA")
+        st.write("**Sargento Nexus:** 'No es suficiente. Ese examen te va a machacar si no estudias más.'")
     else:
-        st.error(f"### {prob:.1f}% - DENEGADO")
-        st.write("**Nexus dice:** 'Prioridades, por favor. Ponte a trabajar.'")
+        st.error(f"### {prob:.1f}% - ¡A ESTUDIAR!")
+        st.write("**Sargento Nexus:** '¿Cero coma algo por ciento? ¡Ni se te ocurra tocar la consola!'")
 
 st.divider()
-st.caption("Nexus AI v9.5 | Lógica de inversión de datos activada")
+st.caption("Nexus AI v10.0 | Algoritmo de Rigor Extremo")
