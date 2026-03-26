@@ -1,44 +1,52 @@
 import streamlit as st
 import numpy as np
 
-# Configuración
-st.set_page_config(page_title="Nexus AI: Sargento Estricto", page_icon="👮‍♂️")
+# Configuración de la página
+st.set_page_config(page_title="Nexus AI - Oráculo Multiverso", page_icon="🧠")
 
 def sigmoid(x): 
     return 1 / (1 + np.exp(-x))
 
-# --- PESOS AJUSTADOS (MODO ESTRICTO) ---
-# Hemos subido los valores a -8 y -10 para que la IA sea mucho más radical.
-# Ahora, un examen cerca (v2 bajo) restará muchísima más puntuación.
+# --- CEREBRO DE LA IA (Modo Lógica Real) ---
+# Pesos configurados para que los factores negativos pesen mucho
 W0 = np.array([[-6.5, -4.5, 3.2, 5.0], [-7.4, -5.6, 4.3, 6.9]])
 W1 = np.array([[-12.5], [-5.8], [4.7], [10.2]])
 
-st.title("👮‍♂️ Nexus AI: Modo Sargento")
-st.write("En este modo, Nexus no perdona. Si hay exámenes, la probabilidad cae en picado.")
+st.title("🧠 Nexus AI: Decisiones Inteligentes")
 
-# Selector de modo
+# 1. Selector de modo
 modo = st.selectbox(
-    "Selecciona el escenario:",
+    "Selecciona el escenario de consulta:",
     ("Instituto", "Banco", "Supervivencia")
 )
 
+# 2. Descripción dinámica según el modo
+if modo == "Instituto":
+    st.write("✨ **Descripción:** Analiza si tus deberes compensan la presión de los exámenes para permitirte tiempo de ocio.")
+    label_1, label_2 = "😇 Deberes hechos", "📚 Exámenes cerca"
+    ayuda_2 = "1.0 significa que el examen es mañana mismo."
+elif modo == "Banco":
+    st.write("🏦 **Descripción:** Evaluación de riesgo crediticio basada en tu capital disponible y tus deudas actuales.")
+    label_1, label_2 = "💰 Ahorros totales", "💸 Deudas pendientes"
+    ayuda_2 = "1.0 significa que tienes deudas muy altas."
+else:
+    st.write("🧟 **Descripción:** Cálculo de probabilidad de éxito en un encuentro hostil basado en tus recursos.")
+    label_1, label_2 = "🔋 Energía actual", "🧟 Proximidad del peligro"
+    ayuda_2 = "1.0 significa que el peligro está justo frente a ti."
+
 st.divider()
 
-# Lógica de inversión de datos
-if modo == "Instituto":
-    v1 = st.slider("😇 Deberes hechos (1 = Todo listo)", 0.0, 1.0, 0.5)
-    val_examenes = st.slider("📚 Proximidad de Exámenes (1 = Mañana mismo)", 0.0, 1.0, 0.5)
-    v2 = 1.0 - val_examenes 
-elif modo == "Banco":
-    v1 = st.slider("💰 Ahorros (1 = Muchos)", 0.0, 1.0, 0.5)
-    val_deudas = st.slider("💸 Deudas pendientes (1 = Muchas deudas)", 0.0, 1.0, 0.5)
-    v2 = 1.0 - val_deudas
-else:
-    v1 = st.slider("🔋 Energía (1 = A tope)", 0.0, 1.0, 0.5)
-    val_daño = st.slider("🧟 Distancia del Zombie (1 = Encima de ti)", 0.0, 1.0, 0.5)
-    v2 = 1.0 - val_daño
+# 3. Sliders de entrada
+col1, col2 = st.columns(2)
+with col1:
+    v1 = st.slider(label_1, 0.0, 1.0, 0.5)
+with col2:
+    val_negativo = st.slider(label_2, 0.0, 1.0, 0.5, help=ayuda_2)
+    # Inversión lógica: más examen/deuda/peligro = menos probabilidad
+    v2 = 1.0 - val_negativo
 
-if st.button("🔥 CONSULTAR A NEXUS", use_container_width=True):
+# 4. Botón de ejecución
+if st.button("🚀 CONSULTAR AL ORÁCULO", use_container_width=True):
     entrada = np.array([v1, v2])
     l1 = sigmoid(np.dot(entrada, W0))
     pred = sigmoid(np.dot(l1, W1))[0]
@@ -46,17 +54,17 @@ if st.button("🔥 CONSULTAR A NEXUS", use_container_width=True):
     
     st.divider()
     
-    # Mensajes según el nuevo rigor de la IA
-    if prob >= 85:
+    # Mostrar resultado con colores lógicos
+    if prob >= 80:
         st.balloons()
-        st.success(f"### {prob:.1f}% - PERMISO CONCEDIDO")
-        st.write("**Sargento Nexus:** 'Impecable. Has cumplido. Retírese a descansar.'")
+        st.success(f"### RESULTADO: {prob:.1f}%")
+        st.write("**Veredicto:** Las condiciones son muy favorables. Tienes luz verde para proceder.")
     elif prob >= 40:
-        st.warning(f"### {prob:.1f}% - REVISIÓN NEGATIVA")
-        st.write("**Sargento Nexus:** 'No es suficiente. Ese examen te va a machacar si no estudias más.'")
+        st.warning(f"### RESULTADO: {prob:.1f}%")
+        st.write("**Veredicto:** Situación de riesgo moderado. Se recomienda precaución o mejorar los datos de entrada.")
     else:
-        st.error(f"### {prob:.1f}% - ¡A ESTUDIAR!")
-        st.write("**Sargento Nexus:** '¿Cero coma algo por ciento? ¡Ni se te ocurra tocar la consola!'")
+        st.error(f"### RESULTADO: {prob:.1f}%")
+        st.write("**Veredicto:** Probabilidad insuficiente. Los factores negativos superan los recursos disponibles.")
 
 st.divider()
-st.caption("Nexus AI v10.0 | Algoritmo de Rigor Extremo")
+st.caption(f"Nexus AI v11.0 | Escenario activo: {modo}")
