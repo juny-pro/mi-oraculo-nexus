@@ -12,14 +12,13 @@ with st.expander("❓ ¿Cómo usar a Nexus? (Guía de Rangos)"):
     * **70% - 89%:** Buen camino, tienes permiso.
     * **50% - 69%:** Zona gris, haz algo más.
     * **0% - 49%:** ¡A trabajar!
-    
-    *Ejemplo: Si pones Deberes en 0.8 y Exámenes en 0.2, verás una probabilidad realista.*
     """)
 
-# --- MOTOR DE LA IA (Pesos suavizados para ver más variedad) ---
-def sigmoid(x): return 1 / (1 + np.exp(-x))
+# --- MOTOR DE LA IA (Pesos suavizados) ---
+def sigmoid(x): 
+    return 1 / (1 + np.exp(-x))
 
-# Pesos ajustados para que la curva no sea tan radical
+# Pesos ajustados
 W0 = np.array([[-2.5, -1.5, 1.2, 2.0], [-2.4, -1.6, 1.3, 1.9]])
 W1 = np.array([[-3.5], [-1.8], [1.7], [3.2]])
 
@@ -49,7 +48,7 @@ if st.button("🔥 CONSULTAR A NEXUS", use_container_width=True):
         st.balloons()
         st.success(f"### RESULTADO: {prob:.1f}%")
         st.subheader("🟢 RANGO: EXCELENCIA")
-        st.write("**Frase de Nexus:** 'Tu situación es óptima. Los datos indican que puedes ignorar tus responsabilidades un rato sin consecuencias.'")
+        st.write("**Frase de Nexus:** 'Tu situación es óptima. Los datos indican que puedes disfrutar de tu tiempo libre sin culpas.'")
         
     elif prob >= 70:
         st.success(f"### RESULTADO: {prob:.1f}%")
@@ -57,4 +56,19 @@ if st.button("🔥 CONSULTAR A NEXUS", use_container_width=True):
         st.write("**Frase de Nexus:** 'Vas por buen camino. Tienes un margen de confianza alto para descansar o jugar.'")
         
     elif prob >= 50:
-        st.warning(f
+        st.warning(f"### RESULTADO: {prob:.1f}%")
+        st.subheader("🟡 RANGO: REVISIÓN MANUAL")
+        st.write("**Frase de Nexus:** 'Estás en equilibrio inestable. Un pequeño esfuerzo extra te daría la victoria.'")
+        
+    elif prob >= 30:
+        st.error(f"### RESULTADO: {prob:.1f}%")
+        st.subheader("🟠 RANGO: RIESGO ALTO")
+        st.write("**Frase de Nexus:** 'La probabilidad de éxito es baja. Te recomiendo avanzar con tus tareas pendientes.'")
+        
+    else:
+        st.error(f"### RESULTADO: {prob:.1f}%")
+        st.subheader("🔴 RANGO: DENEGADO")
+        st.write("**Frase de Nexus:** 'Acceso a la diversión bloqueado. ¡Ponte a estudiar antes de que sea tarde!'")
+
+st.divider()
+st.caption("Nexus AI v8.5 | Sistema de Rangos y Pesos Suavizados")
