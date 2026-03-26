@@ -1,49 +1,44 @@
 import streamlit as st
 import numpy as np
 
-# Configuración de la página
-st.set_page_config(page_title="Nexus AI Multi-Modo", page_icon="🌐")
+# Configuración
+st.set_page_config(page_title="Nexus AI Corregida", page_icon="🧠")
 
-# --- LÓGICA DE LA IA ---
-def sigmoid(x): 
-    return 1 / (1 + np.exp(-x))
+def sigmoid(x): return 1 / (1 + np.exp(-x))
 
-# Pesos equilibrados para que no dé siempre 100%
+# Pesos ajustados para que las decisiones sean lógicas
 W0 = np.array([[-2.5, -1.5, 1.2, 2.0], [-2.4, -1.6, 1.3, 1.9]])
 W1 = np.array([[-3.5], [-1.8], [1.7], [3.2]])
 
-# --- INTERFAZ ---
-st.title("🌐 Nexus AI: El Oráculo Multiverso")
-st.write("Selecciona un escenario y deja que la red neuronal analice tus posibilidades.")
+st.title("🧠 Nexus AI: El Oráculo Lógico")
+st.write("Ahora Nexus entiende que los exámenes son presión negativa.")
 
 # Selector de modo
 modo = st.selectbox(
-    "¿Qué quieres consultar hoy?",
-    ("Instituto: ¿Puedo jugar?", "Banco: ¿Me dan el préstamo?", "Supervivencia: ¿Ataco al Zombie?")
+    "Selecciona el escenario:",
+    ("Instituto", "Banco", "Supervivencia")
 )
 
 st.divider()
 
-# Configuración según el modo elegido
-if modo == "Instituto: ¿Puedo jugar?":
-    label_1, label_2 = "😇 Deberes hechos", "📚 Exámenes cerca"
-    ayuda = "0 = Nada hecho, 1 = Todo perfecto."
-elif modo == "Banco: ¿Me dan el préstamo?":
-    label_1, label_2 = "💰 Ahorros en cuenta", "💼 Estabilidad laboral"
-    ayuda = "0 = Pobreza, 1 = Millonario/Trabajo fijo."
-else:
-    label_1, label_2 = "🔋 Energía/Vida", "⚔️ Calidad del arma"
-    ayuda = "0 = Débil, 1 = Guerrero Legendario."
+# --- AQUÍ ESTÁ EL TRUCO ---
+if modo == "Instituto":
+    v1 = st.slider("😇 Deberes hechos (1 = Todo listo)", 0.0, 1.0, 0.5)
+    # Invertimos: si pones 1 en exámenes, la IA recibe un 0 (presión máxima)
+    val_examenes = st.slider("📚 Proximidad de Exámenes (1 = Mañana mismo)", 0.0, 1.0, 0.5)
+    v2 = 1.0 - val_examenes 
 
-# Sliders dinámicos
-col1, col2 = st.columns(2)
-with col1:
-    v1 = st.slider(label_1, 0.0, 1.0, 0.5, help=ayuda)
-with col2:
-    v2 = st.slider(label_2, 0.0, 1.0, 0.5)
+elif modo == "Banco":
+    v1 = st.slider("💰 Ahorros (1 = Muchos)", 0.0, 1.0, 0.5)
+    val_deudas = st.slider("💸 Deudas pendientes (1 = Muchas deudas)", 0.0, 1.0, 0.5)
+    v2 = 1.0 - val_deudas
+
+else:
+    v1 = st.slider("🔋 Energía (1 = A tope)", 0.0, 1.0, 0.5)
+    val_daño = st.slider("🧟 Distancia del Zombie (1 = Encima de ti)", 0.0, 1.0, 0.5)
+    v2 = 1.0 - val_daño
 
 if st.button("🔥 CONSULTAR A NEXUS", use_container_width=True):
-    # Cálculo
     entrada = np.array([v1, v2])
     l1 = sigmoid(np.dot(entrada, W0))
     pred = sigmoid(np.dot(l1, W1))[0]
@@ -51,33 +46,17 @@ if st.button("🔥 CONSULTAR A NEXUS", use_container_width=True):
     
     st.divider()
     
-    # --- RESULTADOS PERSONALIZADOS POR RANGO ---
-    if prob >= 90:
+    # Mensajes lógicos
+    if prob >= 80:
         st.balloons()
-        st.success(f"### RESULTADO: {prob:.1f}% - EXCELENCIA")
-        if modo == "Instituto: ¿Puedo jugar?": fr = "¡Libertad total! Vete a jugar ya."
-        elif modo == "Banco: ¿Me dan el préstamo?": fr = "Préstamo concedido. Eres cliente VIP."
-        else: fr = "¡Victoria fácil! Lo vas a destrozar."
-        
-    elif prob >= 65:
-        st.info(f"### RESULTADO: {prob:.1f}% - FAVORABLE")
-        if modo == "Instituto: ¿Puedo jugar?": fr = "Tienes permiso, pero no te pases con las horas."
-        elif modo == "Banco: ¿Me dan el préstamo?": fr = "Aprobado, pero con intereses estándar."
-        else: fr = "Ganarás, pero saldrás con alguna herida."
-        
-    elif prob >= 40:
-        st.warning(f"### RESULTADO: {prob:.1f}% - RIESGO MODERADO")
-        if modo == "Instituto: ¿Puedo jugar?": fr = "Haz una tarea más y vuelve a preguntarme."
-        elif modo == "Banco: ¿Me dan el préstamo?": fr = "Necesitamos que alguien te avale."
-        else: fr = "Mejor huye. Tienes un 50/50 de morir."
-        
+        st.success(f"### {prob:.1f}% - ¡ADELANTE!")
+        st.write("**Nexus dice:** 'Todo bajo control. Disfruta.'")
+    elif prob >= 45:
+        st.warning(f"### {prob:.1f}% - CUIDADO")
+        st.write("**Nexus dice:** 'Estás en el límite. Haz algo productivo primero.'")
     else:
-        st.error(f"### RESULTADO: {prob:.1f}% - DENEGADO")
-        if modo == "Instituto: ¿Puedo jugar?": fr = "¡Ponte a estudiar ahora mismo!"
-        elif modo == "Banco: ¿Me dan el préstamo?": fr = "Operación rechazada. No tienes fondos."
-        else: fr = "Muerte segura. No te acerques a ese zombie."
-
-    st.subheader(f"💬 Nexus dice: {fr}")
+        st.error(f"### {prob:.1f}% - DENEGADO")
+        st.write("**Nexus dice:** 'Prioridades, por favor. Ponte a trabajar.'")
 
 st.divider()
-st.caption("Nexus AI v9.0 | Multiverso Neural")
+st.caption("Nexus AI v9.5 | Lógica de inversión de datos activada")
